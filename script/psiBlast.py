@@ -4,7 +4,7 @@ from Bio.Blast import NCBIXML
 import numpy as np
 from scipy.sparse import csr_matrix
 
-AA = "ARNDCEQGHILKMFPSTWYVXZJ"
+AA = "ABCDEFGHIJKLMNOPQRSTUVWYZX*-"
 AA_MAPPING = dict((s,i) for i,s in enumerate(AA))
 
 def save_sparse_csr(filename,array):
@@ -27,11 +27,7 @@ def computeProfile(record, querySeq ,weights = None):
             for aaQ, aaH in zip(hsp.query,hsp.sbjct):
                 if(aaQ=='-'):
                     continue
-                if(aaH in AA):
-                    profile[AA_MAPPING[aaH]][i] += 1*weights[k]
-                else:
-                    if(aaH != "-"):
-                        print(aaH)
+                profile[AA_MAPPING[aaH]][i] += 1*weights[k]
                 i+=1
 
     for i,aa in enumerate(querySeq):
@@ -47,7 +43,7 @@ def computeWeights(record, querySeq, profile):
     weight = 0
     for i,aa in enumerate(querySeq):
         weight+=profile[AA_MAPPING[aa]][i]
-    weights[-1] = weight
+    weights[-1] = -weight
 
     for k,al in enumerate(record.alignments):
         weight = 0
