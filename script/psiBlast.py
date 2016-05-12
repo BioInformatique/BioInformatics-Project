@@ -4,7 +4,7 @@ from Bio.Blast import NCBIXML
 import numpy as np
 from scipy.sparse import csr_matrix
 
-AA = "ARNDCEQGHILKMFPSTWYV"
+AA = "ARNDCEQGHILKMFPSTWYVXZJ"
 AA_MAPPING = dict((s,i) for i,s in enumerate(AA))
 
 def save_sparse_csr(filename,array):
@@ -16,10 +16,10 @@ def load_sparse_csr(filename):
     return csr_matrix((  loader['data'], loader['indices'], loader['indptr']),
                          shape = loader['shape'])
 
-def coputeProfile(record, weights = None):
-    profile = np.zeros(shape = (20,record.query_letters))
+def computeProfile(record, querySeq ,weights = None):
+    profile = np.zeros(shape = (23,record.query_letters))
     if weights == None:
-        weights = [1]*len(record.alignments)
+        weights = [1]*(len(record.alignments)+1)
 
     for k,al in enumerate(record.alignments):
         for hsp in al.hsps:
@@ -29,13 +29,26 @@ def coputeProfile(record, weights = None):
                     continue
                 if(aaH in AA):
                     profile[AA_MAPPING[aaH]][i] += 1*weights[k]
+                else:
+                    if(aaH != "-"):
+                        print(aaH)
                 i+=1
+
+    for i,aa in enumerate(querySeq):
+        profile[AA_MAPPING[aa]][i]+=1*weights[-1]
+
     profile = profile/profile.sum(axis=0)
     return profile
 
-def computeWeights(record, profile):
+def computeWeights(record, querySeq, profile):
     profile = np.log(profile)
-    weights = [0]*len(record.alignments)
+    weights = [0]*(len(record.alignments)+1)
+
+    weight = 0
+    for i,aa in enumerate(querySeq):
+        weight+=profile[AA_MAPPING[aa]][i]
+    weights[-1] = weight
+
     for k,al in enumerate(record.alignments):
         weight = 0
         for hsp in al.hsps:
@@ -49,7 +62,7 @@ def computeWeights(record, profile):
         weights[k] = -weight
     return weights
 
-def psiBlast(filename):
+def psiBlast(filename, querySeq):
     global AA, AA_MAPPING
     pssmFileName = "temp/pssm"
     cline = NcbipsiblastCommandline('psiblast',db="dbCoil/nr", query = "temp/query.fasta", \
@@ -63,9 +76,9 @@ def psiBlast(filename):
 
     res = open("temp/outFinal.xml", "r")
     record = NCBIXML.read(res)
-    profile = coputeProfile(record)
-    weights = computeWeights(record, profile)
-    profile = coputeProfile(record, weights)
+    profile = computeProfile(record,querySeq )
+    weights = computeWeights(record, querySeq, profile)
+    profile = computeProfile(record, querySeq, weights)
     profile = csr_matrix(profile)
     save_sparse_csr(filename,profile)
 
@@ -75,7 +88,7 @@ def main():
         tempFile = open("temp/query.fasta","w")
         tempFile.write(">"+seq.id+"\n"+str(seq.seq)+"\n")
         tempFile.close()
-        psiBlast("profile/"+seq.id)
+        psiBlast("profile/"+seq.id,seq.seq)
         print(i,end=" - ")
         print(seq.id)
 
