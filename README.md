@@ -1,6 +1,6 @@
 # BioInformatics-Project
 
-#Required
+# Required
 
 Library needed :
 - numpy
@@ -11,13 +11,13 @@ Program needed:
 - Blast+
 
 Folder:
-data : with the training set (fasta file)
-db : with a NR-DataBase
-dbCoil : with a NR-DataBase filtred
-profile : to save all profiles
-temp : for temp file
+-data : with the training set (fasta file)
+-db : with a NR-DataBase
+-dbCoil : with a NR-DataBase filtred
+-profile : to save all profiles
+-temp : for temp file
 
-#How to run
+# How to run
 
 You need to be in the BioInformatics-Project folder and then execute this command :
 
