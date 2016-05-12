@@ -11,11 +11,11 @@ Program needed:
 - Blast+
 
 Folder:
--data : with the training set (fasta file)
--db : with a NR-DataBase
--dbCoil : with a NR-DataBase filtred
--profile : to save all profiles
--temp : for temp file
+- data : with the training set (fasta file)
+- db : with a NR-DataBase
+- dbCoil : with a NR-DataBase filtred
+- profile : to save all profiles
+- temp : for temp file
 
 # How to run
 
