@@ -78,8 +78,6 @@ def main():
         psiBlast("profile/"+seq.id)
         print(i,end=" - ")
         print(seq.id)
-        if(i>5):
-            break
 
 
 
