@@ -17,7 +17,7 @@ def load_sparse_csr(filename):
                          shape = loader['shape'])
 
 def computeProfile(record, querySeq ,weights = None):
-    profile = np.zeros(shape = (23,record.query_letters))
+    profile = np.zeros(shape = (28,record.query_letters))
     if weights == None:
         weights = [1]*(len(record.alignments)+1)
 
