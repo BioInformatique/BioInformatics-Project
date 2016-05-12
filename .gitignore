@@ -60,3 +60,10 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#folder
+data/*
+db/*
+dbCoil/*
+profile/*
+temp/*
