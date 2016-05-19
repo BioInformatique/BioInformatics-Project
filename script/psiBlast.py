@@ -90,7 +90,8 @@ def main():
 
 
 
+if __name__ == '__main__':
+    main()
 
-main()
 # psiBlast("test/Profile")
 # profileLoad = load_sparse_csr("test/Profile.npz")
