@@ -87,22 +87,22 @@ x,y = getXY(filename,ystr)
 
 
 
-X_train = np.array([x.tolist()],ndmin=3)
-Y_train = np.array([y.tolist()],ndmin=3)
+X_train = np.array([x],ndmin=3)
+Y_train = np.array([y],ndmin=3)
 
 
-# model = graphModel()
-# data = {'input':X_train,'output':Y_train}
-# print("FIT")
-# model.fit(data)
+model = graphModel()
+data = {'input':X_train,'output':Y_train}
+print("FIT")
+model.fit(data)
 
 # model = sequenceModel()
 # print("FIT")
 # model.fit([X_train,X_train],Y_train)
 
-model = otherModel()
-print("FIT")
-model.fit(X_train,Y_train)
+# model = otherModel()
+# print("FIT")
+# model.fit(X_train,Y_train)
 
 
 
