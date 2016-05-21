@@ -1,9 +1,12 @@
+import theano
+theano.config.floatX = 'float32'
 import brnn
 from random import shuffle
 import numpy as np
 import sys
 
-lr_init = 0.0001 #0.1*2512/827988
+
+lr_init = 0.0015 #0.1*2512/827988
 
 def getTrainSet():
 	f = open("data/ssTrain50.txt")
@@ -40,11 +43,13 @@ def blocks(X_train,Y_train):
 
 	while i < len(X_train):
 		size = X_train[order[i]].shape[0]
-		if(maxLen<size):
-			maxLen = size
-		nAA += size
-		tmp += [order[i]]
-		if(nAA > 1000 or i == len(X_train)-1):
+		if(size < 300):
+			if(maxLen<size):
+				maxLen = size
+			nAA += size
+			tmp += [order[i]]
+
+		if(nAA > 827988 or i == len(X_train)-1):
 			X_block = []
 			Y_block = []
 			for j in tmp:
@@ -60,10 +65,10 @@ def blocks(X_train,Y_train):
 		i+=1
 	return X_blocks,Y_blocks
 
-def printProgresse(ratio,i):
+def printProgresse(ratio,i,loss):
 	sys.stdout.write('\r')
 	# the exact output you're looking for:
-	sys.stdout.write("[%-100s] %d%%" % ('='*int(i*ratio), int(i*ratio)))
+	sys.stdout.write("[%-100s] %d%% loss : %.4f" % ('='*int(i*ratio), int(i*ratio),loss))
 	sys.stdout.flush()
 
 def train(model,X_train,Y_train):
@@ -93,8 +98,8 @@ def train(model,X_train,Y_train):
 			if(len(X.shape) != 3 or len(Y.shape) != 3):
 				print("ERROR")
 				continue
-			hist = model.fit(X,Y,batch_size=X.shape[0],nb_epoch=1,verbose=0)
-			printProgresse(RATIO,time)
+			hist = model.fit(X,Y,batch_size=3,nb_epoch=1,verbose=1)
+			printProgresse(RATIO,time,hist.history["loss"][-1])
 
 		epoch +=1
 
@@ -118,8 +123,11 @@ def train(model,X_train,Y_train):
 def main():
 	X_train,Y_train = getTrainSet()
 	X_blocks,Y_blocks = blocks(X_train,Y_train)
+	print(len(X_blocks))
+	print(X_blocks[0].shape)
 	model = brnn.otherModel()
 	train(model,X_blocks,Y_blocks)
+	# train(model,X_train,Y_train)
 
 if __name__ == '__main__':
 	main()

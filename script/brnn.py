@@ -79,8 +79,10 @@ def otherModel(input_dim = 28, MAX_SEQ_LENGTH=None,N_CLASSES=8,Ct=3,NFB = 8, NHO
 
 	model = Model(input=inputs, output=output)
 	print("COMPILE")
-	model.compile(loss='categorical_crossentropy',
+	model.compile(loss = 'mean_squared_error',
+			# loss='categorical_crossentropy',
 	            optimizer='rmsprop',
+	            # optimizer='sgd',
 	            metrics=['accuracy'])
 
 	return model
