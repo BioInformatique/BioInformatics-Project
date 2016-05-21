@@ -17,8 +17,6 @@ def getTrainSet():
 		x,y = brnn.getXY(name,ss)
 		X_train.append(x)
 		Y_train.append(y)
-		if(i>30):
-			break
 
 	return X_train,Y_train
 
@@ -52,7 +50,7 @@ def train(model,X_train,Y_train):
 		if(loss == None or last_loss < loss):
 			loss = last_loss
 			epochNotImprove = 0
-			model.save_weights('model/best.h5')
+			model.save_weights('model/best.h5',overwrite=True)
 		else:
 			epochNotImprove += 1
 
