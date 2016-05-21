@@ -6,9 +6,6 @@ import psiBlast
 SS = "HGIEBST "
 SS_MAPPING = dict((s,i) for i,s in enumerate(SS))
 
-input_dim = 28
-MAX_SEQ_LENGTH = 330
-N_CLASSES = 8
 
 def getXY(filename, ystr):
 	global SS,SS_MAPPING
@@ -81,28 +78,33 @@ def otherModel(input_dim = 28, MAX_SEQ_LENGTH=None,N_CLASSES=8):
 
 	return model
 
-filename = "11ASA"
-ystr = "     HHHHHHHHHHHHHHHHHHHHHH EEE    SEEETTSS S  TTSS    EE  SSSTT  EEE S  TTHHHHHHHHTT  TT EEE EEEEE TT SS  SS  SEEEEEEEEEE  TT  SHHHHHHHHHHHHHHHHHHHHHHHHHS     S SS EEEEHHHHHHHS SS HHHHHHHHHHHHSEEEEE  SSB SSS BSS   TTT   SSB TTSSB SEEEEEEEETTTTEEEEEEEEEE   HHHHHHHHHHHT TTTTTSHHHHHHHTT S  EEEEEEEHHHHHHHHHT S GGGTS     HHHHHHS    "
-x,y = getXY(filename,ystr)
+def main():
+	filename = "11ASA"
+	ystr = "     HHHHHHHHHHHHHHHHHHHHHH EEE    SEEETTSS S  TTSS    EE  SSSTT  EEE S  TTHHHHHHHHTT  TT EEE EEEEE TT SS  SS  SEEEEEEEEEE  TT  SHHHHHHHHHHHHHHHHHHHHHHHHHS     S SS EEEEHHHHHHHS SS HHHHHHHHHHHHSEEEEE  SSB SSS BSS   TTT   SSB TTSSB SEEEEEEEETTTTEEEEEEEEEE   HHHHHHHHHHHT TTTTTSHHHHHHHTT S  EEEEEEEHHHHHHHHHT S GGGTS     HHHHHHS    "
+	x,y = getXY(filename,ystr)
 
 
 
-X_train = np.array([x],ndmin=3)
-Y_train = np.array([y],ndmin=3)
+	X_train = np.array([x],ndmin=3)
+	Y_train = np.array([y],ndmin=3)
 
 
-model = graphModel()
-data = {'input':X_train,'output':Y_train}
-print("FIT")
-model.fit(data)
+	model = graphModel()
+	data = {'input':X_train,'output':Y_train}
+	print("FIT")
+	model.fit(data)
 
-# model = sequenceModel()
-# print("FIT")
-# model.fit([X_train,X_train],Y_train)
+	# model = sequenceModel()
+	# print("FIT")
+	# model.fit([X_train,X_train],Y_train)
 
-# model = otherModel()
-# print("FIT")
-# model.fit(X_train,Y_train)
+	# model = otherModel()
+	# print("FIT")
+	# model.fit(X_train,Y_train)
+
+if __name__ == '__main__':
+	main()
+
 
 
 
