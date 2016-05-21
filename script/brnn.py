@@ -58,15 +58,22 @@ def sequenceModel(input_dim = 28, MAX_SEQ_LENGTH=None,N_CLASSES=8):
 
 	return model
 
-def otherModel(input_dim = 28, MAX_SEQ_LENGTH=None,N_CLASSES=8):
+def otherModel(input_dim = 28, MAX_SEQ_LENGTH=None,N_CLASSES=8,Ct=3,NFB = 8, NHO = 11, NHC =9):
 	inputs = Input(shape=(None,input_dim))
+
 	print("FORWARD")
-	forward = LSTM(8, input_dim = input_dim,return_sequences=True)(inputs)
+	forwardInput = LSTM(output_dim=NHC, input_dim = input_dim,return_sequences=True)(inputs)
+	forwardOuput = TimeDistributed(Dense(output_dim=NFB))(forwardInput)
+
 	print("BACKWARD")
-	backward = LSTM(8, input_dim = input_dim,go_backwards=True,return_sequences=True)(inputs)
+	backwardInput = LSTM(output_dim=NHC, input_dim = input_dim,go_backwards=True,return_sequences=True)(inputs)
+	backwardOuput = TimeDistributed(Dense(output_dim=NFB))(backwardInput)
+
+	print("CENTER")
+	center = TimeDistributed(Dense(output_dim=NHO))(inputs)
 
 	print("MODEL")
-	merged = merge([forward, backward], mode='concat')
+	merged = merge([forwardOuput, backwardOuput, center], mode='concat')
 	after_dp = Dropout(0.5)(merged)
 	output = TimeDistributed(Dense(N_CLASSES, activation='softmax'))(after_dp)
 
@@ -89,18 +96,18 @@ def main():
 	Y_train = np.array([y],ndmin=3)
 
 
-	model = graphModel()
-	data = {'input':X_train,'output':Y_train}
-	print("FIT")
-	model.fit(data)
+	# model = graphModel()
+	# data = {'input':X_train,'output':Y_train}
+	# print("FIT")
+	# model.fit(data)
 
 	# model = sequenceModel()
 	# print("FIT")
 	# model.fit([X_train,X_train],Y_train)
 
-	# model = otherModel()
-	# print("FIT")
-	# model.fit(X_train,Y_train)
+	model = otherModel()
+	print("FIT")
+	hist = model.fit(X_train,Y_train)
 
 if __name__ == '__main__':
 	main()
