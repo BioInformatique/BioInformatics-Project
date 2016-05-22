@@ -1,5 +1,6 @@
 from keras.models import Model, Graph, Sequential
-from keras.layers import Dense, Dropout, Embedding, LSTM, Input, Merge,TimeDistributedDense,TimeDistributed, merge
+from keras.layers import Dense, Dropout, Embedding, LSTM, Input, Merge,TimeDistributedDense,TimeDistributed, merge, GRU, SimpleRNN
+
 import numpy as np
 import psiBlast
 
@@ -10,7 +11,7 @@ SS_MAPPING = dict((s,i) for i,s in enumerate(SS))
 def getXY(filename, ystr):
 	global SS,SS_MAPPING
 	x = psiBlast.load_sparse_csr("profile/"+filename+".npz").toarray().T
-	y = [[0 for x in range(len(SS))] for i in range(len(ystr))]
+	y = [[0 for j in range(len(SS))] for i in range(len(ystr))]
 	for i,ss in enumerate(ystr):
 		y[i][SS_MAPPING[ss]] = 1
 	y = np.matrix(y)
@@ -79,10 +80,8 @@ def otherModel(input_dim = 28, MAX_SEQ_LENGTH=None,N_CLASSES=8,Ct=3,NFB = 8, NHO
 
 	model = Model(input=inputs, output=output)
 	print("COMPILE")
-	model.compile(loss = 'mean_squared_error',
-			# loss='categorical_crossentropy',
+	model.compile(loss='categorical_crossentropy',
 	            optimizer='rmsprop',
-	            # optimizer='sgd',
 	            metrics=['accuracy'])
 
 	return model
