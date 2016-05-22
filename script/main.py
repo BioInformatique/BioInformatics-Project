@@ -11,8 +11,8 @@ import time as time
 
 lr_init = 0.00015 #0.1*2512/827988
 
-def getTrainSet():
-	f = open("data/ssTrain50.txt")
+def getSet(filename):
+	f = open(filename)
 	ssTrain = f.readlines()
 	f.close()
 
@@ -73,7 +73,7 @@ def blocks2(X_train,Y_train):
 
 	X_blocks = []
 	Y_blocks = []
-	for k in range(50):
+	for k in range(300):
 		i=0
 		tmp = []
 		maxLen = 0
@@ -107,9 +107,10 @@ def printProgresse(ratio,i,loss,idy,t1,t0, acc):
 	sys.stdout.write("[%-100s] %d%% loss : %.4f - acc %.4f : - time %d - id : %4d" % ('='*int(i*ratio), int(i*ratio),loss,acc,t1-t0,idy))
 	sys.stdout.flush()
 
-def train(model,X_train,Y_train):
+def train(model,X_train,Y_train, X_test, Y_test):
 	global lr_init
 	RATIO = 100.0/len(X_train)
+	RATIO2 = 100.0/len(X_test)
 	changeLR(model,lr_init)
 	training_order = list(range(len(X_train)))
 	# shuffle(training_order)
@@ -123,8 +124,6 @@ def train(model,X_train,Y_train):
 		shuffle(training_order)
 		print("Epoch "+str(epoch))
 		t0 = time.time()
-		losss = []
-		accs = []
 		for times,i in enumerate(training_order):
 			if(len(X_train[i].shape) < 3):
 				X = np.array([X_train[i]],ndmin=3)
@@ -145,15 +144,33 @@ def train(model,X_train,Y_train):
 				print(i)
 				break
 
-			losss += hist.history["loss"]
-			accs += hist.history["acc"]
-
 			# data = {'input':X,'output':Y}
 			# hist = model.fit(data,batch_size=3,nb_epoch=1,verbose=1)
 
 			# hist = model.fit([X,X],Y,batch_size=3,nb_epoch=1,verbose=1)
 
 			printProgresse(RATIO,times,hist.history["loss"][-1],i,time.time(),t0,hist.history["acc"][-1])
+		print()
+
+		losss = []
+		accs = []
+		t0 = time.time()
+		for i in range(len(X_test)):
+			if(len(X_test[i].shape) < 3):
+				X = np.array([X_test[i]],ndmin=3)
+			else:
+				X = X_test[i]
+			if(len(Y_test[i].shape) < 3):
+				Y = np.array([Y_test[i]],ndmin=3)
+			else:
+				Y = Y_test[i]
+			if(len(X.shape) != 3 or len(Y.shape) != 3):
+				print("ERROR")
+				continue
+			tmp_loss, acc_loss = model.evaluate(X, Y, batch_size=3,verbose=0)
+			losss += [tmp_loss]
+			accs += [acc_loss]
+			printProgresse(RATIO2,i,tmp_loss,i,time.time(),t0,acc_loss)
 		print()
 		epoch +=1
 
@@ -164,6 +181,7 @@ def train(model,X_train,Y_train):
 		mean_acc = sum(accs)/len(accs)
 
 		print("loss : ",mean_loss," - acc : ",mean_acc)
+		print()
 		if(loss == None or mean_loss < loss):
 			loss = mean_loss
 			epochNotImprove = 0
@@ -182,22 +200,34 @@ def train(model,X_train,Y_train):
 def main():
 	blacklist = [5,101,648,913,1022,1214]
 	blacklist.reverse()
-	X_train,Y_train = getTrainSet()
+	X_train,Y_train = getSet("data/ssTrain50.txt")
+	X_test1,Y_test1 = getSet("data/SStestCASP4.txt")
+	X_test2,Y_test2 = getSet("data/SStestr121.txt")
+
+	print(len(X_test1),len(X_test2),len(Y_test1),len(Y_test2))
+
+	X_test = X_test1+X_test2
+	Y_test = Y_test1+Y_test2
+
+	print(len(X_test),len(Y_test))
+
 	for i in blacklist:
 		del X_train[i]
 		del Y_train[i]
 
-	# X_blocks,Y_blocks = blocks(X_train,Y_train)
-	X_blocks,Y_blocks = blocks2(X_train,Y_train)
+	# X_train_blocks,Y_train_blocks = blocks(X_train,Y_train)
+	X_train_blocks,Y_train_blocks = blocks2(X_train,Y_train)
+	X_test_blocks,Y_test_blocks = blocks2(X_test,Y_test)
 
-	print(len(X_blocks))
-	print(X_blocks[0].shape)
-	print(Y_blocks[0].shape)
+	print(len(X_test_blocks))
+	print(X_test_blocks[0].shape)
+	print(Y_test_blocks[0].shape)
+
 	model = brnn.otherModel()
 	# model = brnn.graphModel()
 	# model = brnn.sequenceModel()
 
-	train(model,X_blocks,Y_blocks)
+	train(model,X_train_blocks,Y_train_blocks, X_test_blocks, Y_test_blocks)
 	# train(model,X_train,Y_train)
 
 if __name__ == '__main__':
