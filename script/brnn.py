@@ -75,8 +75,8 @@ def otherModel(input_dim = 28, MAX_SEQ_LENGTH=None,N_CLASSES=8,Ct=3,NFB = 8, NHO
 
 	print("MODEL")
 	merged = merge([forwardOuput, backwardOuput, center], mode='concat')
-	# after_dp = Dropout(0.5)(merged)
-	output = TimeDistributed(Dense(N_CLASSES, activation='softmax'))(merged)
+	after_dp = Dropout(0.5)(merged)
+	output = TimeDistributed(Dense(N_CLASSES, activation='softmax'))(after_dp)
 
 	model = Model(input=inputs, output=output)
 	print("COMPILE")

@@ -30,7 +30,7 @@ def getTrainSet():
 
 def changeLR(model,lr=None):
 	if(lr == None):
-		lr = model.optimzer.lr/2
+		lr = model.optimizer.lr/2
 	model.optimizer.lr = lr
 	model.optimizer.epsilon = 1.0e-7
 
@@ -73,7 +73,7 @@ def blocks2(X_train,Y_train):
 
 	X_blocks = []
 	Y_blocks = []
-	for k in range(300):
+	for k in range(50):
 		i=0
 		tmp = []
 		maxLen = 0
@@ -123,6 +123,8 @@ def train(model,X_train,Y_train):
 		shuffle(training_order)
 		print("Epoch "+str(epoch))
 		t0 = time.time()
+		losss = []
+		accs = []
 		for times,i in enumerate(training_order):
 			if(len(X_train[i].shape) < 3):
 				X = np.array([X_train[i]],ndmin=3)
@@ -143,6 +145,9 @@ def train(model,X_train,Y_train):
 				print(i)
 				break
 
+			losss += hist.history["loss"]
+			accs += hist.history["acc"]
+
 			# data = {'input':X,'output':Y}
 			# hist = model.fit(data,batch_size=3,nb_epoch=1,verbose=1)
 
@@ -155,10 +160,12 @@ def train(model,X_train,Y_train):
 		if(math.isnan(hist.history["loss"][-1])):
 				break
 
-		last_loss = hist.history["loss"][-1]
-		print(last_loss)
-		if(loss == None or last_loss < loss):
-			loss = last_loss
+		mean_loss = sum(losss)/len(losss)
+		mean_acc = sum(accs)/len(accs)
+
+		print("loss : ",mean_loss," - acc : ",mean_acc)
+		if(loss == None or mean_loss < loss):
+			loss = mean_loss
 			epochNotImprove = 0
 			model.save_weights('model/best.h5',overwrite=True)
 		else:
