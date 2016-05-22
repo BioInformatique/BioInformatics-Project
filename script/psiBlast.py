@@ -79,7 +79,7 @@ def psiBlast(filename, querySeq):
     save_sparse_csr(filename,profile)
 
 def main():
-    seqs = list(SeqIO.parse("data/train50.fasta", "fasta"))
+    seqs = list(SeqIO.parse("testCASP4.fasta", "fasta"))
     for i,seq in enumerate(seqs):
         tempFile = open("temp/query.fasta","w")
         tempFile.write(">"+seq.id+"\n"+str(seq.seq)+"\n")
