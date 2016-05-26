@@ -25,5 +25,5 @@ Folder:
 
 You need to be in the BioInformatics-Project folder and then execute this command :
 
-python3 script/psiBlast.py
-python3 script/main.py
+- python3 script/psiBlast.py
+- python3 script/main.py
